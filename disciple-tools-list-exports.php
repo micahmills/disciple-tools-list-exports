@@ -17,33 +17,6 @@
  *          https://www.gnu.org/licenses/gpl-2.0.html
  */
 
-/*******************************************************************
- * Using the List Export
- * The Disciple Tools starter plugin is intended to accelerate integrations and extensions to the Disciple Tools system.
- * This basic plugin starter has some of the basic elements to quickly launch and extension project in the pattern of
- * the Disciple Tools system.
- */
-
-/**
- * Refactoring (renaming) this plugin as your own:
- * 1. @todo Refactor all occurrences of the name DT_List_Exports, dt_list_exports, dt-list-export, dt-list-export, dt_list_export_post_type, and List Export
- * 2. @todo Rename the `disciple-tools-dt-list-export.php and menu-and-tabs.php files.
- * 3. @todo Update the README.md and LICENSE
- * 4. @todo Update the default.pot file if you intend to make your plugin multilingual. Use a tool like POEdit
- * 5. @todo Change the translation domain to in the phpcs.xml your plugin's domain: @todo
- * 6. @todo Replace the 'sample' namespace in this and the rest-api.php files
- */
-
-/**
- * The starter plugin is equipped with:
- * 1. Wordpress style requirements
- * 2. Travis Continuous Integration
- * 3. Disciple Tools Theme presence check
- * 4. Remote upgrade system for ongoing updates outside the Wordpress Directory
- * 5. Multilingual ready
- * 6. PHP Code Sniffer support (composer) @use /vendor/bin/phpcs and /vendor/bin/phpcbf
- * 7. Starter Admin menu and options page with tabs.
- */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
@@ -161,6 +134,7 @@ class DT_List_Exports {
     private function includes() {
 
         // build in a way that these required files can simply be added to core in the future.
+        require_once ('includes/bcc-filter-export.php');
     }
 
     /**
@@ -186,16 +160,6 @@ class DT_List_Exports {
         $this->token             = 'dt_list_exports';
         $this->version             = '0.1';
 
-
-
-        // sample rest api class
-//        require_once( 'includes/rest-api.php' );
-
-        // sample post type class
-//        require_once( 'includes/post-type.php' );
-
-        // custom site to site links
-//        require_once( 'includes/custom-site-to-site-links.php' );
     }
 
     /**
@@ -212,27 +176,13 @@ class DT_List_Exports {
             if ( ! class_exists( 'Puc_v4_Factory' ) ) {
                 require( get_template_directory() . '/dt-core/libraries/plugin-update-checker/plugin-update-checker.php' );
             }
-            /**
-             * Below is the publicly hosted .json file that carries the version information. This file can be hosted
-             * anywhere as long as it is publicly accessible. You can download the version file listed below and use it as
-             * a template.
-             * Also, see the instructions for version updating to understand the steps involved.
-             * @see https://github.com/DiscipleTools/disciple-tools-version-control/wiki/How-to-Update-the-Starter-Plugin
-             * @todo enable this section with your own hosted file
-             * @todo An example of this file can be found in /includes/admin/disciple-tools-dt-list-export-version-control.json
-             * @todo It is recommended to host this version control file outside the project itself. Github is a good option for delivering static json.
-             */
 
-            /***** @todo remove from here
-
-            $hosted_json = "https://raw.githubusercontent.com/DiscipleTools/disciple-tools-version-control/master/disciple-tools-dt-list-export-version-control.json"; // @todo change this url
+            $hosted_json = "https://raw.githubusercontent.com/DiscipleTools/disciple-tools-list-exports/master/includes/admin/disciple-tools-version-control.json";
             Puc_v4_Factory::buildUpdateChecker(
                 $hosted_json,
                 __FILE__,
                 'disciple-tools-dt-list-export'
             );
-
-            ********* @todo to here */
 
         }
 

@@ -18,7 +18,7 @@ function dt_list_exports_filters() {
         <div class="section-body" style="padding-top:1em;">
             <a id="bcc-email-list" data-open="bcc-email-list">bcc email list</a><br>
             <a id="phone-list" data-open="phone-list">phone number list</a><br>
-            <a id="csv-list" data-open="csv-list">csv list</a><br>
+<!--            <a id="csv-list" data-open="csv-list">csv list</a><br>-->
 <!--            <button type="button" class="button small hollow expanded" data-open="map-list">Map List</button>-->
 <!--            <button type="button" class="button small hollow expanded" data-open="csv-list">CSV Export List</button>-->
         </div>

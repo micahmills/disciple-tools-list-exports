@@ -134,7 +134,7 @@ class DT_List_Exports {
     private function includes() {
 
         // build in a way that these required files can simply be added to core in the future.
-        require_once( 'includes/bcc-filter-export.php' );
+        require_once( 'includes/export-action.php' );
     }
 
     /**

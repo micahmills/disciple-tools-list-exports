@@ -5,9 +5,9 @@ function dt_list_exports_filters() {
     ?>
     <div class="bordered-box collapsed">
         <div class="section-header"><?php esc_html_e( 'List Exports', 'disciple_tools' )?>
-            <button class="help-button float-right" data-section="filters-help-text">
-                <img class="help-icon" src="<?php echo esc_html( get_template_directory_uri() . '/dt-assets/images/help.svg' ) ?>" alt="help"/>
-            </button>
+<!--            <button class="help-button float-right" data-section="export-help-text">-->
+<!--                <img class="help-icon" src="--><?php //echo esc_html( get_template_directory_uri() . '/dt-assets/images/help.svg' ) ?><!--" alt="help"/>-->
+<!--            </button>-->
             <button class="section-chevron chevron_down">
                 <img src="<?php echo esc_html( get_template_directory_uri() . '/dt-assets/images/chevron_down.svg' ) ?>" alt="expand"/>
             </button>
@@ -21,6 +21,10 @@ function dt_list_exports_filters() {
 <!--            <a id="csv-list" data-open="csv-list">csv list</a><br>-->
 <!--            <button type="button" class="button small hollow expanded" data-open="map-list">Map List</button>-->
 <!--            <button type="button" class="button small hollow expanded" data-open="csv-list">CSV Export List</button>-->
+        </div>
+        <div class="help-section" id="export-help-text" style="display: none">
+            <h3><?php echo esc_html_x( "Export List", 'Optional Documentation', 'disciple_tools' ) ?></h3>
+            <p><?php echo esc_html_x( "These links build exports from the current list. If the list is longer than show, you must extend the list to include all list items past 100. Emails are broken into groups of 50 because of common BCC limits and email service send limits.", 'Optional Documentation', 'disciple_tools' ) ?></p>
         </div>
     </div>
     <div id="export-reveal" class="reveal" data-reveal>
@@ -41,7 +45,7 @@ function dt_list_exports_filters() {
                 let count = 0
                 let group = 0
                 $.each(window.contact_list, function(i,v){
-                    if (typeof v.contact_email !== 'undefined' ) {
+                    if (typeof v.contact_email !== 'undefined' && v.contact_email !== '' ) {
                         if (typeof email_list[group] === "undefined" ) {
                             email_list[group] = ''
                         }
@@ -97,7 +101,7 @@ function dt_list_exports_filters() {
                 let contacts_without = jQuery('#contacts-without')
 
                 $.each(window.contact_list, function(i,v){
-                    if (typeof v.contact_email !== 'undefined' ) {
+                    if (typeof v.contact_email !== 'undefined' && v.contact_email !== '' ) {
                         if (typeof email_list[group] === "undefined" ) {
                             email_list[group] = ''
                         }
@@ -172,7 +176,7 @@ function dt_list_exports_filters() {
                 let contacts_without = jQuery('#contacts-without')
 
                 $.each(window.contact_list, function(i,v){
-                    if (typeof v.contact_phone !== 'undefined' ) {
+                    if (typeof v.contact_phone !== 'undefined' && v.contact_phone !== '' ) {
                         if (typeof email_list[group] === "undefined" ) {
                             email_list[group] = ''
                         }

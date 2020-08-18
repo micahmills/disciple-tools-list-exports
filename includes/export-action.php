@@ -307,8 +307,7 @@ function dt_list_exports_filters() {
                 $('#export-reveal').foundation('open')
 
                 $.when( $.ajax(export_contacts( 0, 'name' ) ) ).then(function() {
-                    console.log(window.export_list)
-
+                    // console.log(window.export_list)
 
                     window.csv_export = []
 
@@ -661,7 +660,7 @@ function dt_list_exports_filters() {
 
                         complete++
                         if ( required === complete ) {
-                            console.log(window.export_list)
+                            // console.log(window.export_list)
                             return window.export_list;
                         }
 

@@ -4,10 +4,10 @@ add_action( 'dt_post_contact_list_sidebar', 'dt_list_exports_filters' );
 function dt_list_exports_filters() {
     ?>
     <div class="bordered-box collapsed">
-        <div class="section-header"><?php esc_html_e( 'List Exports', 'disciple_tools' )?>
-<!--            <button class="help-button float-right" data-section="export-help-text">-->
-<!--                <img class="help-icon" src="--><?php //echo esc_html( get_template_directory_uri() . '/dt-assets/images/help.svg' ) ?><!--" alt="help"/>-->
-<!--            </button>-->
+        <div class="section-header"><?php esc_html_e( 'List Exports', 'disciple_tools' )?>&nbsp;
+             <button class="float-right" data-open="export-help-text">
+                <img class="help-icon" src="<?php echo esc_html( get_template_directory_uri() . '/dt-assets/images/help.svg' ) ?>" alt="help"/>
+            </button>
             <button class="section-chevron chevron_down">
                 <img src="<?php echo esc_html( get_template_directory_uri() . '/dt-assets/images/chevron_down.svg' ) ?>" alt="expand"/>
             </button>
@@ -21,12 +21,9 @@ function dt_list_exports_filters() {
             <a id="csv-list">csv list</a><br>
             <a id="map-list">map list</a><br>
         </div>
-        <div class="help-section" id="export-help-text" style="display: none">
-            <h3><?php echo esc_html_x( "Export List", 'Optional Documentation', 'disciple_tools' ) ?></h3>
-            <p><?php echo esc_html_x( "These links build exports from the current list. If the list is longer than show, you must extend the list to include all list items past 100. Emails are broken into groups of 50 because of common BCC limits and email service send limits.", 'Optional Documentation', 'disciple_tools' ) ?></p>
-        </div>
+
     </div>
-    <div id="export-reveal" class="reveal" data-reveal data-v-offset="10px">
+    <div id="export-reveal" class="large reveal" data-reveal data-v-offset="10px">
         <span class="section-header" id="export-title"></span> <span id="reveal-loading-spinner" style="display: inline-block" class="loading-spinner active"></span>
         <hr>
         <div id="export-content"></div>
@@ -36,10 +33,37 @@ function dt_list_exports_filters() {
     </div>
     <div id="export-reveal-map" class="full reveal" data-reveal>
         <span class="section-header" id="export-title-map"></span> <span id="full-reveal-loading-spinner" style="display: inline-block" class="loading-spinner active"></span>
+        <span class="section-header"> | Mapped Locations: <span id="mapped" class="loading-spinner active"></span> | Contacts Without Locations: <span id="unmapped" class="loading-spinner active"></span> </span>
         <div id="export-content-full">
             <div id="dynamic-styles"></div>
             <div id="map-wrapper">
                 <div id='map'></div>
+            </div>
+        </div>
+        <button class="close-button" data-close aria-label="Close modal" type="button">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div id="export-help-text" class="large reveal" data-reveal data-v-offset="10px">
+        <span class="section-header">List Export Help</span>
+        <hr>
+        <div class="grid-x">
+            <div class="cell">
+                <p><strong>BCC Email List</strong></p>
+                <p>Using the current filter, the available emails are grouped by 50 and can be launched into your default email client by group. Many email providers put a limit of 50 on BCC emails. You can open all groups at once using the "Open All" button. If the list is too large, this might alert your email provider. </p>
+                <p>The BCC email tool is meant to assist small group emails. Bulk email should be handled through bulk email providers.</p>
+            </div>
+            <div class="cell">
+                <p><strong>Phone Number List</strong></p>
+                <p>Using the current filter, this is intended for copy pasting a list of numbers into a messaging app, WhatsApp, Signal, etc. This is a quick way of starting a group conversation.</p>
+            </div>
+            <div class="cell">
+                <p><strong>CSV List</strong></p>
+                <p>Using the current filter, this is a simple way to export basic information and use it in other applications.</p>
+            </div>
+            <div class="cell">
+                <p><strong>Map List</strong></p>
+                <p>Using the current filter, this creates a basic points map of known locations of listed individuals.</p>
             </div>
         </div>
         <button class="close-button" data-close aria-label="Close modal" type="button">
@@ -192,7 +216,6 @@ function dt_list_exports_filters() {
 
             }
 
-
             /* PHONE EXPORT **************************************/
             let phone_list = $('#phone-list')
             phone_list.on('click', function(){
@@ -275,8 +298,6 @@ function dt_list_exports_filters() {
                 })
             })
 
-
-
             /* CSV LIST EXPORT **************************************/
             let csv_list = $('#csv-list')
             csv_list.on('click', function(){
@@ -357,7 +378,6 @@ function dt_list_exports_filters() {
 
             })
 
-
             /* MAP LIST EXPORT **************************************/
             if ( window.mapbox_key ) {
                 let map_content = jQuery('#dynamic-styles')
@@ -400,6 +420,8 @@ function dt_list_exports_filters() {
                         map.on('load', function () {
 
                             let features = []
+                            let mapped = 0
+                            let unmapped = 0
                             $.each(window.export_list, function(i,v){
                                 if ( typeof v.location_grid_meta !== 'undefined') {
                                     features.push({
@@ -413,8 +435,15 @@ function dt_list_exports_filters() {
                                             'label': v.location_grid_meta[0].label
                                         }
                                     })
+                                    mapped++
+                                }
+                                else {
+                                    unmapped++
                                 }
                             })
+
+                            $('#mapped').html('(' + mapped + ')')
+                            $('#unmapped').html('(' + unmapped + ')')
 
                             let geojson = {
                                 'type': 'FeatureCollection',
@@ -490,15 +519,17 @@ function dt_list_exports_filters() {
                 })
             }
 
+            /* EXPORT UTILITIES */
             function clear_vars(){
                 window.export_list = []
                 window.current_filter = ''
                 document.cookie = ''
                 $('#export-content').empty()
                 $('#export-title').empty()
-                $('#map').empty()
                 $('#export-title-full').empty()
-
+                $('#map').empty()
+                $('#mapped').empty()
+                $('#unmapped').empty()
             }
             function show_spinner(){
                 $('.loading-spinner').addClass('active')
@@ -506,7 +537,6 @@ function dt_list_exports_filters() {
             function hide_spinner(){
                 $('.loading-spinner').removeClass('active')
             }
-
             function export_contacts( offset, sort ) {
 
                 let items = []

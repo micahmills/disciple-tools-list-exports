@@ -307,6 +307,8 @@ function dt_list_exports_filters() {
                 $('#export-reveal').foundation('open')
 
                 $.when( $.ajax(export_contacts( 0, 'name' ) ) ).then(function() {
+                    console.log(window.export_list)
+
 
                     window.csv_export = []
 
@@ -560,7 +562,9 @@ function dt_list_exports_filters() {
                 customFilters.push(JSON.parse(JSON.stringify(currentFilter)))
                 if ( currentView === "custom_filter"){
                     let filterId = checked.data("id")
-                    filter = _.find(customFilters, {ID:filterId})
+                    if ( _.find(customFilters, {ID:filterId}) ){
+                        filter = _.find(customFilters, {ID:filterId})
+                    }
                     filter.type = currentView
                     query = filter.query
                 } else if ( currentView ) {
@@ -630,6 +634,7 @@ function dt_list_exports_filters() {
 
                 let required = 0
                 let complete = 0
+                window.export_list = []
 
                 while( window.contact_list.total > data.offset ) {
                     required++
@@ -656,6 +661,7 @@ function dt_list_exports_filters() {
 
                         complete++
                         if ( required === complete ) {
+                            console.log(window.export_list)
                             return window.export_list;
                         }
 

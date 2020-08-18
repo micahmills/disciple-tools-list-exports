@@ -73,7 +73,7 @@ function dt_list_exports_filters() {
 
     <script>
         jQuery(document).ready(function($){
-            window.mapbox_key = '<?php echo ( class_exists( 'DT_Mapbox_API' ) && DT_Mapbox_API::get_key() ) ? esc_attr( DT_Mapbox_API::get_key() ) : '' ; ?>'
+            window.mapbox_key = '<?php echo ( class_exists( 'DT_Mapbox_API' ) && DT_Mapbox_API::get_key() ) ? esc_attr( DT_Mapbox_API::get_key() ) : ''; ?>'
 
             $('.js-list-view').on('click', function(){
                 clear_vars()

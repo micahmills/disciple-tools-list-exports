@@ -87,60 +87,11 @@ function dt_list_exports_filters() {
                 $('#export-title').html('BCC Email List')
                 $('#export-reveal').foundation('open')
 
-                $.when( $.ajax(export_contacts( 0, 'name' ) ) ).then(function() {
+                $.ajax(export_contacts( 0, 'name' ) ).then(function() {
                     generate_email_totals()
                     generate_email_links()
                 })
             })
-            function generate_email_links() {
-                let email_links = []
-                let count = 0
-                let group = 0
-                $.each(window.export_list, function (i, v) {
-                    if (typeof v.contact_email !== 'undefined' && v.contact_email !== '') {
-                        if (typeof email_links[group] === "undefined") {
-                            email_links[group] = ''
-                        }
-                        $.each(v.contact_email, function (ii, vv) {
-                            email_links[group] += vv.value + ','
-                            count++
-                        })
-                        if (count > 50) {
-                            group++
-                            count = 0
-                        }
-                    }
-                })
-
-                // loop 50 each
-                let grouping_table = $('#grouping-table')
-                let email_strings = []
-                $.each(email_links, function (index, string) {
-                    index++
-
-                    email_strings = []
-                    email_strings = string
-                    email_strings.replaceAll(',', ', ')
-
-                    grouping_table.append(`
-                    <tr><td style="vertical-align:top; width:50%;"><a href="mailto:?subject=group${index}&bcc=${string}" id="group-link-${index}" class="button expanded export-link-button">Group ${index}</a></td><td><a onclick="jQuery('#group-addresses-${index}').toggle()">show group addresses</a> <span style="display:none;overflow-wrap: break-word;" id="group-addresses-${index}">${string.replaceAll(',', ', ')}</span></td></tr>
-                    `)
-
-                })
-                grouping_table.append(`
-                    <tr><td style="vertical-align:top; text-align:center; width:50%;"><a class="button expanded export-link-button" id="open_all">Open All</a></td><td></td></tr>
-                    `)
-
-                $('.export-link-button').on('click',function(){
-                    $(this).addClass('warning');
-                })
-                $('#open_all').on('click', function(){
-                    $('.export-link-button').each(function(i,v){
-                       document.getElementById(v.id).click()
-                    })
-                })
-
-            }
             function generate_email_totals(){
 
                 let bcc_email_content = jQuery('#export-content')
@@ -216,6 +167,55 @@ function dt_list_exports_filters() {
                 hide_spinner()
 
             }
+            function generate_email_links() {
+                let email_links = []
+                let count = 0
+                let group = 0
+                $.each(window.export_list, function (i, v) {
+                    if (typeof v.contact_email !== 'undefined' && v.contact_email !== '') {
+                        if (typeof email_links[group] === "undefined") {
+                            email_links[group] = ''
+                        }
+                        $.each(v.contact_email, function (ii, vv) {
+                            email_links[group] += vv.value + ','
+                            count++
+                        })
+                        if (count > 50) {
+                            group++
+                            count = 0
+                        }
+                    }
+                })
+
+                // loop 50 each
+                let grouping_table = $('#grouping-table')
+                let email_strings = []
+                $.each(email_links, function (index, string) {
+                    index++
+
+                    email_strings = []
+                    email_strings = string
+                    email_strings.replaceAll(',', ', ')
+
+                    grouping_table.append(`
+                    <tr><td style="vertical-align:top; width:50%;"><a href="mailto:?subject=group${index}&bcc=${string}" id="group-link-${index}" class="button expanded export-link-button">Group ${index}</a></td><td><a onclick="jQuery('#group-addresses-${index}').toggle()">show group addresses</a> <span style="display:none;overflow-wrap: break-word;" id="group-addresses-${index}">${string.replaceAll(',', ', ')}</span></td></tr>
+                    `)
+
+                })
+                grouping_table.append(`
+                    <tr><td style="vertical-align:top; text-align:center; width:50%;"><a class="button expanded export-link-button" id="open_all">Open All</a></td><td></td></tr>
+                    `)
+
+                $('.export-link-button').on('click',function(){
+                    $(this).addClass('warning');
+                })
+                $('#open_all').on('click', function(){
+                    $('.export-link-button').each(function(i,v){
+                        document.getElementById(v.id).click()
+                    })
+                })
+
+            }
 
             /* PHONE EXPORT **************************************/
             let phone_list = $('#phone-list')
@@ -226,7 +226,7 @@ function dt_list_exports_filters() {
                 jQuery('#export-title').html('Phone List')
                 $('#export-reveal').foundation('open')
 
-                $.when( $.ajax(export_contacts( 0, 'name' ) ) ).then(function() {
+                $.ajax(export_contacts( 0, 'name' ) ).then(function() {
 
                     let bcc_email_content = jQuery('#export-content')
                     bcc_email_content.empty()
@@ -307,7 +307,7 @@ function dt_list_exports_filters() {
                 $('#export-title').html('CSV List')
                 $('#export-reveal').foundation('open')
 
-                $.when( $.ajax(export_contacts( 0, 'name' ) ) ).then(function() {
+                $.ajax(export_contacts( 0, 'name' ) ).then(function() {
                     // console.log(window.export_list)
 
                     window.csv_export = []
@@ -402,7 +402,7 @@ function dt_list_exports_filters() {
                     $('#export-title-map').html('Map of List')
                     $('#export-reveal-map').foundation('open')
 
-                    $.when( $.ajax(export_contacts( 0, 'name' ) ) ).then(function() {
+                    $.ajax(export_contacts( 0, 'name' ) ).then(function() {
 
                         mapboxgl.accessToken = window.mapbox_key;
                         var map = new mapboxgl.Map({

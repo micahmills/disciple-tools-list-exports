@@ -26,8 +26,8 @@ function dt_list_exports_filters() {
             <p><?php echo esc_html_x( "These links build exports from the current list. If the list is longer than show, you must extend the list to include all list items past 100. Emails are broken into groups of 50 because of common BCC limits and email service send limits.", 'Optional Documentation', 'disciple_tools' ) ?></p>
         </div>
     </div>
-    <div id="export-reveal" class="reveal" data-reveal>
-        <p class="section-header" id="export-title"></p>
+    <div id="export-reveal" class="reveal" data-reveal data-v-offset="10px">
+        <span class="section-header" id="export-title"></span> <span id="reveal-loading-spinner" style="display: inline-block" class="loading-spinner active"></span>
         <hr>
         <div id="export-content"></div>
         <button class="close-button" data-close aria-label="Close modal" type="button">
@@ -35,7 +35,7 @@ function dt_list_exports_filters() {
         </button>
     </div>
     <div id="export-reveal-map" class="full reveal" data-reveal>
-        <p class="section-header" id="export-title-full"></p>
+        <span class="section-header" id="export-title-map"></span> <span id="full-reveal-loading-spinner" style="display: inline-block" class="loading-spinner active"></span>
         <div id="export-content-full">
             <div id="dynamic-styles"></div>
             <div id="map-wrapper">
@@ -50,17 +50,26 @@ function dt_list_exports_filters() {
     <script>
         jQuery(document).ready(function($){
             window.mapbox_key = '<?php echo ( class_exists( 'DT_Mapbox_API' ) && DT_Mapbox_API::get_key() ) ? esc_attr( DT_Mapbox_API::get_key() ) : '' ; ?>'
-            window.export_list = []
+
+            $('.js-list-view').on('click', function(){
+                clear_vars()
+            })
 
             /* BCC EXPORT **************************************/
             let email_list_button = $('#bcc-email-list')
             email_list_button.on('click', function(){
+                clear_vars()
+                show_spinner()
+                $('#export-title').html('BCC Email List')
+                $('#export-reveal').foundation('open')
+
                 $.when( $.ajax(export_contacts( 0, 'name' ) ) ).then(function() {
-                    generate_emails()
-                    generate_email_modal()
+                    generate_email_totals()
+                    generate_email_links()
+                    hide_spinner()
                 })
             })
-            function generate_emails() {
+            function generate_email_links() {
                 let email_list = []
                 let count = 0
                 let group = 0
@@ -81,31 +90,57 @@ function dt_list_exports_filters() {
                 })
 
                 // loop 50 each
+                let grouping_table = $('#grouping-table')
+                let email_strings = []
                 $.each(email_list, function (index, string) {
                     index++
-                    window.location.href = "mailto:?subject=group" + index + "&bcc=" + string
+
+                    email_strings = []
+                    email_strings = string
+                    email_strings.replaceAll(',', ', ')
+
+                    grouping_table.append(`
+                    <tr><td style="vertical-align:top; width:50%;"><a href="mailto:?subject=group${index}&bcc=${string}" id="group-link-${index}" class="button expanded export-link-button">Group ${index}</a></td><td><a onclick="jQuery('#group-addresses-${index}').toggle()">show group addresses</a> <span style="display:none;overflow-wrap: break-word;" id="group-addresses-${index}">${string.replaceAll(',', ', ')}</span></td></tr>
+                    `)
+
                 })
+                grouping_table.append(`
+                    <tr><td style="vertical-align:top; text-align:center; width:50%;"><a class="button expanded export-link-button" id="open_all">Open All</a></td><td></td></tr>
+                    `)
+
+                $('.export-link-button').on('click',function(){
+                    $(this).addClass('warning');
+                })
+                $('#open_all').on('click', function(){
+                    $('.export-link-button').each(function(i,v){
+                       document.getElementById(v.id).click()
+                    })
+                })
+
             }
-            function generate_email_modal(){
-                jQuery('#export-title').html('BCC Email List')
+            function generate_email_totals(){
+
                 let bcc_email_content = jQuery('#export-content')
                 bcc_email_content.empty()
 
                 bcc_email_content.append(`
                     <div class="grid-x">
-                        <div class="cell small-6">
-                            <strong>No Addresses (<span id="list-count-without"></span>)</strong>
-                            <div id="contacts-without"></div>
+                        <div class="cell">
+                           <table><tbody id="grouping-table"></tbody></table>
                         </div>
-                        <div class="cell small-6">
-                            <strong>With Additional Addresses (<span id="list-count-with"></span>)</strong>
-                            <div id="contacts-with"></div>
+
+                        <div class="cell">
+                            <a onclick="jQuery('#email-list-print').toggle();"><strong>Full List (<span id="list-count-full"></span>)</strong></a>
+                            <div class="cell" id="email-list-print" style="display:none;"></div>
                         </div>
-                    </div>
-                    <hr>
-                    <div class="grid-x">
-                        <a onclick="jQuery('#email-list-print').show();"><strong>Full List (<span id="list-count-full"></span>)</strong></a>
-                        <div class="cell" id="email-list-print" style="display:none;"></div>
+                        <div class="cell">
+                            <a onclick="jQuery('#contacts-without').toggle();"><strong>No Addresses (<span id="list-count-without"></span>)</strong></a>
+                            <div id="contacts-without" style="display:none;"></div>
+                        </div>
+                        <div class="cell">
+                            <a onclick="jQuery('#contacts-with').toggle();"><strong>With Additional Addresses (<span id="list-count-with"></span>)</strong></a>
+                            <div id="contacts-with" style="display:none;"></div>
+                        </div>
                     </div>
                 `)
 
@@ -155,44 +190,40 @@ function dt_list_exports_filters() {
                 jQuery('#list-count-without').html(list_count['without'])
                 jQuery('#list-count-full').html(list_count['full'])
 
-                $('#export-reveal').foundation('open')
             }
-            email_list_button.on('click', function(){
-
-                $.when( $.ajax(export_contacts( 0, 'name' ) ) ).then(function() {
-
-
-                }) /* end when */
-            })
 
 
             /* PHONE EXPORT **************************************/
             let phone_list = $('#phone-list')
             phone_list.on('click', function(){
 
+                clear_vars()
+                show_spinner()
+                jQuery('#export-title').html('Phone List')
+                $('#export-reveal').foundation('open')
+
                 $.when( $.ajax(export_contacts( 0, 'name' ) ) ).then(function() {
 
-                    jQuery('#export-title').html('Phone List')
                     let bcc_email_content = jQuery('#export-content')
                     bcc_email_content.empty()
 
                     bcc_email_content.append(`
-                    <div class="grid-x">
-                        <strong>Full List (<span id="list-count-full"></span>)</strong>
-                        <div class="cell" id="email-list-print"></div>
-                    </div>
-                    <hr>
-                    <div class="grid-x">
-                        <div class="cell small-6">
-                            <strong>No Phone Numbers (<span id="list-count-without"></span>)</strong>
-                            <div id="contacts-without"></div>
+                        <div class="grid-x">
+                            <a onclick="jQuery('#email-list-print').toggle();"><strong>Full List (<span id="list-count-full"></span>)</strong></a>
+                            <div class="cell" id="email-list-print"></div>
                         </div>
-                        <div class="cell small-6">
-                            <strong>With Additional Phone Numbers (<span id="list-count-with"></span>)</strong>
-                            <div id="contacts-with"></div>
+                        <hr>
+                        <div class="grid-x">
+                            <div class="cell">
+                                <a onclick="jQuery('#contacts-without').toggle();"><strong>Has No Phone Number (<span id="list-count-without"></span>)</strong></a>
+                                <div id="contacts-without" style="display:none;"></div>
+                            </div>
+                            <div class="cell">
+                                <a onclick="jQuery('#contacts-with').toggle();"><strong>Has Additional Phone Numbers (<span id="list-count-with"></span>)</strong></a>
+                                <div id="contacts-with" style="display:none;"></div>
+                            </div>
                         </div>
-                    </div>
-                `)
+                    `)
 
                     let email_list = []
                     let list_count = {
@@ -240,7 +271,7 @@ function dt_list_exports_filters() {
                     jQuery('#list-count-without').html(list_count['without'])
                     jQuery('#list-count-full').html(list_count['full'])
 
-                    $('#export-reveal').foundation('open')
+                    hide_spinner()
                 })
             })
 
@@ -249,6 +280,10 @@ function dt_list_exports_filters() {
             /* CSV LIST EXPORT **************************************/
             let csv_list = $('#csv-list')
             csv_list.on('click', function(){
+                clear_vars()
+                show_spinner()
+                $('#export-title').html('CSV List')
+                $('#export-reveal').foundation('open')
 
                 $.when( $.ajax(export_contacts( 0, 'name' ) ) ).then(function() {
 
@@ -269,13 +304,35 @@ function dt_list_exports_filters() {
                         } else {
                             window.csv_export[i]['email'] = ''
                         }
-
                     })
 
+                    let head_row = {title:"Title", phone:"Phone", email:"Email" }
+                    window.csv_export.unshift(head_row)
 
-                    DownloadJSON2CSV(window.csv_export);
+                    $('#export-content').append(`
+                        <div class="grid-x">
+                                <div class="cell"><button class="button" type="button" id="download_csv_file">Download CSV File</button></div>
+                                <div class="cell">
+                                   <a onclick="jQuery('#csv-output').toggle()">show list</a><br><br>
+                                   <code id="csv-output" style="display:none"></code>
+                                </div>
+                                <div class="cell"><br></div>
+                            </div>
+                        `)
 
+                    let csv_output = $('#csv-output')
+                    $.each(window.csv_export, function(i,v){
+                        csv_output.append( $.map(v, function(e){
+                            return e;
+                        }).join(','))
+                        csv_output.append(`<br>`)
+                    })
 
+                    $('#download_csv_file').on('click', function(){
+                        DownloadJSON2CSV(window.csv_export);
+                    })
+
+                    hide_spinner()
                 }) /*end when*/
 
                 function DownloadJSON2CSV(objArray)
@@ -318,11 +375,12 @@ function dt_list_exports_filters() {
                     `)
                 let map_list = $('#map-list')
                 map_list.on('click', function(){
+                    clear_vars()
+                    show_spinner()
+                    $('#export-title-map').html('Map of List')
+                    $('#export-reveal-map').foundation('open')
 
                     $.when( $.ajax(export_contacts( 0, 'name' ) ) ).then(function() {
-
-                        jQuery('#export-title-full').html('Map of List')
-                        $('#export-reveal-map').foundation('open')
 
                         mapboxgl.accessToken = window.mapbox_key;
                         var map = new mapboxgl.Map({
@@ -362,7 +420,6 @@ function dt_list_exports_filters() {
                                 'type': 'FeatureCollection',
                                 'features': features
                             }
-
 
                             map.addSource('pointsSource', {
                                 'type': 'geojson',
@@ -426,13 +483,32 @@ function dt_list_exports_filters() {
                             });
                             map.fitBounds(bounds);
 
+                            hide_spinner()
+
                         })
                     })
                 })
             }
 
-            function export_contacts( offset, sort ) {
+            function clear_vars(){
                 window.export_list = []
+                window.current_filter = ''
+                document.cookie = ''
+                $('#export-content').empty()
+                $('#export-title').empty()
+                $('#map').empty()
+                $('#export-title-full').empty()
+
+            }
+            function show_spinner(){
+                $('.loading-spinner').addClass('active')
+            }
+            function hide_spinner(){
+                $('.loading-spinner').removeClass('active')
+            }
+
+            function export_contacts( offset, sort ) {
+
                 let items = []
                 let loading_spinner = $("#list-loading-spinner")
                 let getContactsPromise = null

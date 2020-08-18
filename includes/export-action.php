@@ -90,20 +90,19 @@ function dt_list_exports_filters() {
                 $.when( $.ajax(export_contacts( 0, 'name' ) ) ).then(function() {
                     generate_email_totals()
                     generate_email_links()
-                    hide_spinner()
                 })
             })
             function generate_email_links() {
-                let email_list = []
+                let email_links = []
                 let count = 0
                 let group = 0
                 $.each(window.export_list, function (i, v) {
                     if (typeof v.contact_email !== 'undefined' && v.contact_email !== '') {
-                        if (typeof email_list[group] === "undefined") {
-                            email_list[group] = ''
+                        if (typeof email_links[group] === "undefined") {
+                            email_links[group] = ''
                         }
                         $.each(v.contact_email, function (ii, vv) {
-                            email_list[group] += vv.value + ','
+                            email_links[group] += vv.value + ','
                             count++
                         })
                         if (count > 50) {
@@ -116,7 +115,7 @@ function dt_list_exports_filters() {
                 // loop 50 each
                 let grouping_table = $('#grouping-table')
                 let email_strings = []
-                $.each(email_list, function (index, string) {
+                $.each(email_links, function (index, string) {
                     index++
 
                     email_strings = []
@@ -168,7 +167,7 @@ function dt_list_exports_filters() {
                     </div>
                 `)
 
-                let email_list = []
+                let email_totals = []
                 let list_count = {
                     with: 0,
                     without: 0,
@@ -181,11 +180,11 @@ function dt_list_exports_filters() {
 
                 $.each(window.export_list, function (i, v) {
                     if (typeof v.contact_email !== 'undefined' && v.contact_email !== '') {
-                        if (typeof email_list[group] === "undefined") {
-                            email_list[group] = ''
+                        if (typeof email_totals[group] === "undefined") {
+                            email_totals[group] = ''
                         }
                         $.each(v.contact_email, function (ii, vv) {
-                            email_list[group] += vv.value + ', '
+                            email_totals[group] += vv.value + ', '
                             count++
                             list_count['full']++
                         })
@@ -204,7 +203,7 @@ function dt_list_exports_filters() {
                 })
 
                 let list_print = jQuery('#email-list-print')
-                $.each(email_list, function (index, string) {
+                $.each(email_totals, function (index, string) {
                     list_print.append(string)
                     index++
                 })
@@ -213,6 +212,8 @@ function dt_list_exports_filters() {
                 jQuery('#list-count-with').html(list_count['with'])
                 jQuery('#list-count-without').html(list_count['without'])
                 jQuery('#list-count-full').html(list_count['full'])
+
+                hide_spinner()
 
             }
 
@@ -248,7 +249,7 @@ function dt_list_exports_filters() {
                         </div>
                     `)
 
-                    let email_list = []
+                    let phone_list = []
                     let list_count = {
                         with: 0,
                         without: 0,
@@ -261,11 +262,11 @@ function dt_list_exports_filters() {
 
                     $.each(window.export_list, function (i, v) {
                         if (typeof v.contact_phone !== 'undefined' && v.contact_phone !== '') {
-                            if (typeof email_list[group] === "undefined") {
-                                email_list[group] = ''
+                            if (typeof phone_list[group] === "undefined") {
+                                phone_list[group] = ''
                             }
                             $.each(v.contact_phone, function (ii, vv) {
-                                email_list[group] += vv.value + ', '
+                                phone_list[group] += vv.value + ', '
                                 count++
                                 list_count['full']++
                             })
@@ -284,7 +285,7 @@ function dt_list_exports_filters() {
                     })
 
                     let list_print = jQuery('#email-list-print')
-                    $.each(email_list, function (index, string) {
+                    $.each(phone_list, function (index, string) {
                         list_print.append(string)
                         index++
                     })
@@ -635,6 +636,7 @@ function dt_list_exports_filters() {
                 let complete = 0
                 window.export_list = []
 
+                data.offset = 0
                 while( window.contact_list.total > data.offset ) {
                     required++
 

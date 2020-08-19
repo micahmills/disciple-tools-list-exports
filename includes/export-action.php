@@ -451,8 +451,7 @@ function dt_list_exports_filters() {
                             style: 'mapbox://styles/mapbox/light-v10',
                             center: [-30, 20],
                             minZoom: 1,
-                            maxZoom: 8,
-                            zoom: 1
+                            zoom: 2
                         });
 
                         // disable map rotation using right click + drag

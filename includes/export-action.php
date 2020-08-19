@@ -79,8 +79,6 @@ function dt_list_exports_filters() {
                 clear_vars()
             })
 
-
-
             /* BCC EXPORT **************************************/
             let email_list_button = $('#bcc-email-list')
             email_list_button.on('click', function(){
@@ -89,14 +87,14 @@ function dt_list_exports_filters() {
                 $('#export-title').html('BCC Email List')
                 $('#export-reveal').foundation('open')
 
-                console.log('pre_export_contact')
+                // console.log('pre_export_contact')
                 let required = Math.ceil(window.contact_list.total / 100)
                 let complete = 0
                 export_contacts( 0, 'name' )
                 $( document ).ajaxComplete(function( event, xhr, settings ) {
                     complete++
                     if ( required === complete ){
-                        console.log('post_export_contact')
+                        // console.log('post_export_contact')
                         generate_email_totals()
                         generate_email_links()
                     }
@@ -235,14 +233,14 @@ function dt_list_exports_filters() {
                 jQuery('#export-title').html('Phone List')
                 $('#export-reveal').foundation('open')
 
-                console.log('pre_export_contact')
+                // console.log('pre_export_contact')
                 let required = Math.ceil(window.contact_list.total / 100)
                 let complete = 0
                 export_contacts( 0, 'name' )
                 $( document ).ajaxComplete(function( event, xhr, settings ) {
                     complete++
                     if ( required === complete ){
-                        console.log('post_export_contact')
+                        // console.log('post_export_contact')
                         phone_content()
                     }
                 });
@@ -328,14 +326,14 @@ function dt_list_exports_filters() {
                 $('#export-title').html('CSV List')
                 $('#export-reveal').foundation('open')
 
-                console.log('pre_export_contact')
+                // console.log('pre_export_contact')
                 let required = Math.ceil(window.contact_list.total / 100)
                 let complete = 0
                 export_contacts( 0, 'name' )
                 $( document ).ajaxComplete(function( event, xhr, settings ) {
                     complete++
                     if ( required === complete ){
-                        console.log('post_export_contact')
+                        // console.log('post_export_contact')
                         csv_export()
                     }
                 });
@@ -432,14 +430,14 @@ function dt_list_exports_filters() {
                     $('#export-title-map').html('Map of List')
                     $('#export-reveal-map').foundation('open')
 
-                    console.log('pre_export_contact')
+                    // console.log('pre_export_contact')
                     let required = Math.ceil(window.contact_list.total / 100)
                     let complete = 0
                     export_contacts( 0, 'name' )
                     $( document ).ajaxComplete(function( event, xhr, settings ) {
                         complete++
                         if ( required === complete ){
-                            console.log('post_export_contact')
+                            // console.log('post_export_contact')
                             map_content()
                         }
                     });
@@ -548,7 +546,6 @@ function dt_list_exports_filters() {
                                 map.getCanvas().style.cursor = '';
                             });
 
-
                             var bounds = new mapboxgl.LngLatBounds();
                             geojson.features.forEach(function(feature) {
                                 bounds.extend(feature.geometry.coordinates);
@@ -630,7 +627,6 @@ function dt_list_exports_filters() {
                 }
                 currentFilter = JSON.parse(JSON.stringify(filter))
 
-
                 let data = currentFilter.query
 
                 if ( offset ){
@@ -702,10 +698,9 @@ function dt_list_exports_filters() {
 
                         complete++
                         if ( required === complete ) {
-                            console.log('export')
+                            // console.log('export')
                             return true;
                         }
-
                     }).catch(err => {
                         if ( _.get( err, "statusText" ) !== "abort" ) {
                             console.error(err)
@@ -721,7 +716,6 @@ function dt_list_exports_filters() {
                     increment = increment + 100
                 }
             }
-
         })
     </script>
     <?php

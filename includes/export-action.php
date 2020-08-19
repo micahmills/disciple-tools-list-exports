@@ -19,7 +19,9 @@ function dt_list_exports_filters() {
             <a id="bcc-email-list">bcc email list</a><br>
             <a id="phone-list">phone number list</a><br>
             <a id="csv-list">csv list</a><br>
+            <?php if ( class_exists( 'DT_Mapbox_API' ) && DT_Mapbox_API::get_key() ) : ?>
             <a id="map-list">map list</a><br>
+            <?php endif; ?>
         </div>
 
     </div>

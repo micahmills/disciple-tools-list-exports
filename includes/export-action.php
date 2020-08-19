@@ -79,6 +79,8 @@ function dt_list_exports_filters() {
                 clear_vars()
             })
 
+
+
             /* BCC EXPORT **************************************/
             let email_list_button = $('#bcc-email-list')
             email_list_button.on('click', function(){
@@ -87,10 +89,18 @@ function dt_list_exports_filters() {
                 $('#export-title').html('BCC Email List')
                 $('#export-reveal').foundation('open')
 
-                $.ajax(export_contacts( 0, 'name' ) ).then(function() {
-                    generate_email_totals()
-                    generate_email_links()
-                })
+                console.log('pre_export_contact')
+                let required = Math.ceil(window.contact_list.total / 100)
+                let complete = 0
+                export_contacts( 0, 'name' )
+                $( document ).ajaxComplete(function( event, xhr, settings ) {
+                    complete++
+                    if ( required === complete ){
+                        console.log('post_export_contact')
+                        generate_email_totals()
+                        generate_email_links()
+                    }
+                });
             })
             function generate_email_totals(){
 
@@ -165,7 +175,6 @@ function dt_list_exports_filters() {
                 jQuery('#list-count-full').html(list_count['full'])
 
                 hide_spinner()
-
             }
             function generate_email_links() {
                 let email_links = []
@@ -214,7 +223,7 @@ function dt_list_exports_filters() {
                         document.getElementById(v.id).click()
                     })
                 })
-
+                hide_spinner()
             }
 
             /* PHONE EXPORT **************************************/
@@ -226,12 +235,23 @@ function dt_list_exports_filters() {
                 jQuery('#export-title').html('Phone List')
                 $('#export-reveal').foundation('open')
 
-                $.ajax(export_contacts( 0, 'name' ) ).then(function() {
+                console.log('pre_export_contact')
+                let required = Math.ceil(window.contact_list.total / 100)
+                let complete = 0
+                export_contacts( 0, 'name' )
+                $( document ).ajaxComplete(function( event, xhr, settings ) {
+                    complete++
+                    if ( required === complete ){
+                        console.log('post_export_contact')
+                        phone_content()
+                    }
+                });
 
-                    let bcc_email_content = jQuery('#export-content')
-                    bcc_email_content.empty()
+                function phone_content() {
+                    let phone_content_container = jQuery('#export-content')
+                    phone_content_container.empty()
 
-                    bcc_email_content.append(`
+                    phone_content_container.append(`
                         <div class="grid-x">
                             <a onclick="jQuery('#email-list-print').toggle();"><strong>Full List (<span id="list-count-full"></span>)</strong></a>
                             <div class="cell" id="email-list-print"></div>
@@ -296,7 +316,8 @@ function dt_list_exports_filters() {
                     jQuery('#list-count-full').html(list_count['full'])
 
                     hide_spinner()
-                })
+                }
+
             })
 
             /* CSV LIST EXPORT **************************************/
@@ -307,9 +328,19 @@ function dt_list_exports_filters() {
                 $('#export-title').html('CSV List')
                 $('#export-reveal').foundation('open')
 
-                $.ajax(export_contacts( 0, 'name' ) ).then(function() {
-                    // console.log(window.export_list)
+                console.log('pre_export_contact')
+                let required = Math.ceil(window.contact_list.total / 100)
+                let complete = 0
+                export_contacts( 0, 'name' )
+                $( document ).ajaxComplete(function( event, xhr, settings ) {
+                    complete++
+                    if ( required === complete ){
+                        console.log('post_export_contact')
+                        csv_export()
+                    }
+                });
 
+                function csv_export() {
                     window.csv_export = []
 
                     $.each(window.export_list, function (i, v) {
@@ -356,7 +387,7 @@ function dt_list_exports_filters() {
                     })
 
                     hide_spinner()
-                }) /*end when*/
+                }
 
                 function DownloadJSON2CSV(objArray)
                 {
@@ -377,7 +408,6 @@ function dt_list_exports_filters() {
                     }
                     window.open( "data:text/csv;charset=utf-8," + escape(str))
                 }
-
             })
 
             /* MAP LIST EXPORT **************************************/
@@ -402,8 +432,19 @@ function dt_list_exports_filters() {
                     $('#export-title-map').html('Map of List')
                     $('#export-reveal-map').foundation('open')
 
-                    $.ajax(export_contacts( 0, 'name' ) ).then(function() {
+                    console.log('pre_export_contact')
+                    let required = Math.ceil(window.contact_list.total / 100)
+                    let complete = 0
+                    export_contacts( 0, 'name' )
+                    $( document ).ajaxComplete(function( event, xhr, settings ) {
+                        complete++
+                        if ( required === complete ){
+                            console.log('post_export_contact')
+                            map_content()
+                        }
+                    });
 
+                    function map_content(){
                         mapboxgl.accessToken = window.mapbox_key;
                         var map = new mapboxgl.Map({
                             container: 'map',
@@ -515,9 +556,8 @@ function dt_list_exports_filters() {
                             map.fitBounds(bounds);
 
                             hide_spinner()
-
                         })
-                    })
+                    }
                 })
             }
 
@@ -542,7 +582,6 @@ function dt_list_exports_filters() {
             function export_contacts( offset, sort ) {
 
                 let items = []
-                let loading_spinner = $("#list-loading-spinner")
                 let getContactsPromise = null
                 let cachedFilter = window.SHAREDFUNCTIONS.get_json_cookie("last_view")
                 let closedSwitch = $(".show-closed-switch");
@@ -637,7 +676,8 @@ function dt_list_exports_filters() {
                 window.export_list = []
 
                 data.offset = 0
-                while( window.contact_list.total > data.offset ) {
+                let increment = 0
+                while( window.contact_list.total > increment ) {
                     required++
 
                     getContactsPromise = $.ajax({
@@ -647,7 +687,7 @@ function dt_list_exports_filters() {
                         },
                         data: data,
                     })
-                    getContactsPromise.then((data)=>{
+                    getContactsPromise.done((data)=>{
                         if (offset){
                             items = _.unionBy(items, data.posts || [], "ID")
                         } else  {
@@ -662,22 +702,23 @@ function dt_list_exports_filters() {
 
                         complete++
                         if ( required === complete ) {
-                            // console.log(window.export_list)
-                            return window.export_list;
+                            console.log('export')
+                            return true;
                         }
 
-                        loading_spinner.removeClass("active")
                     }).catch(err => {
                         if ( _.get( err, "statusText" ) !== "abort" ) {
                             console.error(err)
                             complete++
                             if ( required === complete ) {
+                                console.log('export_contact_complete_with_fail')
                                 return true;
                             }
                         }
                     })
 
                     data.offset = data.offset + 100
+                    increment = increment + 100
                 }
             }
 

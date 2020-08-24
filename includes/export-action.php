@@ -204,10 +204,10 @@ function dt_list_exports_filters() {
 
                     email_strings = []
                     email_strings = string
-                    email_strings.replaceAll(',', ', ')
+                    email_strings.replace(/,/g, ', ')
 
                     grouping_table.append(`
-                    <tr><td style="vertical-align:top; width:50%;"><a href="mailto:?subject=group${index}&bcc=${string}" id="group-link-${index}" class="button expanded export-link-button">Group ${index}</a></td><td><a onclick="jQuery('#group-addresses-${index}').toggle()">show group addresses</a> <span style="display:none;overflow-wrap: break-word;" id="group-addresses-${index}">${string.replaceAll(',', ', ')}</span></td></tr>
+                    <tr><td style="vertical-align:top; width:50%;"><a href="mailto:?subject=group${index}&bcc=${string}" id="group-link-${index}" class="button expanded export-link-button">Open Email for Group ${index}</a></td><td><a onclick="jQuery('#group-addresses-${index}').toggle()">show group addresses</a> <span style="display:none;overflow-wrap: break-word;" id="group-addresses-${index}">${string.replaceAll(',', ', ')}</span></td></tr>
                     `)
 
                 })
@@ -647,7 +647,6 @@ function dt_list_exports_filters() {
 
                 currentFilter.query = data
                 document.cookie = `last_view=${JSON.stringify(currentFilter)}`
-
 
                 let showClosed = showClosedCheckbox.prop("checked")
                 if ( !showClosed && ( currentView === 'custom_filter' || currentView === 'saved-filters' ) ){

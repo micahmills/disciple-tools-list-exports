@@ -177,7 +177,7 @@ class DT_List_Exports {
                 require( get_template_directory() . '/dt-core/libraries/plugin-update-checker/plugin-update-checker.php' );
             }
 
-            $hosted_json = "https://raw.githubusercontent.com/DiscipleTools/disciple-tools-list-exports/master/includes/admin/disciple-tools-version-control.json";
+            $hosted_json = "https://disciple.tools/wp-content/themes/disciple-tools-public-site/version-control.php?id=4103f0a4e707b1c7bebbc42809ab0ace8dd3f56d844d7903bfe9f95a2ccc6972";
             Puc_v4_Factory::buildUpdateChecker(
                 $hosted_json,
                 __FILE__,

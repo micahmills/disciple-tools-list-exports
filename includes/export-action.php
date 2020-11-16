@@ -1,8 +1,9 @@
 <?php
 
-add_action( 'dt_post_contact_list_sidebar', 'dt_list_exports_filters' );
-function dt_list_exports_filters() {
-    ?>
+add_action( 'dt_post_list_filters_sidebar', 'dt_list_exports_filters', 10, 1 );
+function dt_list_exports_filters( $post_type ) {
+    if ( 'contacts' === $post_type ) :
+        ?>
     <div class="bordered-box collapsed">
         <div class="section-header"><?php esc_html_e( 'List Exports', 'disciple_tools' )?>&nbsp;
              <button class="float-right" data-open="export-help-text">
@@ -90,7 +91,7 @@ function dt_list_exports_filters() {
                 $('#export-reveal').foundation('open')
 
                 // console.log('pre_export_contact')
-                let required = Math.ceil(window.contact_list.total / 100)
+                let required = Math.ceil(window.records_list.total / 100)
                 let complete = 0
                 export_contacts( 0, 'name' )
                 $( document ).ajaxComplete(function( event, xhr, settings ) {
@@ -236,7 +237,7 @@ function dt_list_exports_filters() {
                 $('#export-reveal').foundation('open')
 
                 // console.log('pre_export_contact')
-                let required = Math.ceil(window.contact_list.total / 100)
+                let required = Math.ceil(window.records_list.total / 100)
                 let complete = 0
                 export_contacts( 0, 'name' )
                 $( document ).ajaxComplete(function( event, xhr, settings ) {
@@ -329,7 +330,7 @@ function dt_list_exports_filters() {
                 $('#export-reveal').foundation('open')
 
                 // console.log('pre_export_contact')
-                let required = Math.ceil(window.contact_list.total / 100)
+                let required = Math.ceil(window.records_list.total / 100)
                 let complete = 0
                 export_contacts( 0, 'name' )
                 $( document ).ajaxComplete(function( event, xhr, settings ) {
@@ -433,7 +434,7 @@ function dt_list_exports_filters() {
                     $('#export-reveal-map').foundation('open')
 
                     // console.log('pre_export_contact')
-                    let required = Math.ceil(window.contact_list.total / 100)
+                    let required = Math.ceil(window.records_list.total / 100)
                     let complete = 0
                     export_contacts( 0, 'name' )
                     $( document ).ajaxComplete(function( event, xhr, settings ) {
@@ -517,7 +518,7 @@ function dt_list_exports_filters() {
                                 }
                             });
 
-                            if ( window.contact_list.total < 100 ) {
+                            if ( window.records_list.total < 100 ) {
                                 $.each(window.export_list, function(i,v){
                                     if ( typeof v.location_grid_meta !== 'undefined') {
                                         new mapboxgl.Popup()
@@ -594,7 +595,7 @@ function dt_list_exports_filters() {
                     type:"default",
                     ID:currentView,
                     query:{},
-                    labels:[{ id:"all", name:wpApiListSettings.translations.filter_all, field: "assigned"}]
+                    labels:[{ id:"all", name:window.list_settings.translations.filter_all, field: "assigned"}]
                 }
                 customFilters.push(JSON.parse(JSON.stringify(currentFilter)))
                 if ( currentView === "custom_filter"){
@@ -605,7 +606,7 @@ function dt_list_exports_filters() {
                     filter.type = currentView
                     query = filter.query
                 } else if ( currentView ) {
-                    filter = _.find(wpApiListSettings.filters.filters, {ID:filterId}) || _.find(wpApiListSettings.filters.filters, {ID:filterId.toString()}) || filter
+                    filter = _.find(window.list_settings.filters.filters, {ID:filterId}) || _.find(window.list_settings.filters.filters, {ID:filterId.toString()}) || filter
                     if ( filter ){
                         filter.type = 'default'
                         filter.labels =  filter.labels || [{ id:filterId, name:filter.name}]
@@ -638,9 +639,9 @@ function dt_list_exports_filters() {
                     data.offset = 0
                 } else if (!data.sort) {
                     data.sort = 'name';
-                    if ( wpApiListSettings.current_post_type === "contacts" ){
+                    if ( window.wpApiShare.post_type === "contacts" ){
                         data.sort = 'overall_status'
-                    } else if ( wpApiListSettings.current_post_type === "groups" ){
+                    } else if ( window.wpApiShare.post_type === "groups" ){
                         data.sort = "group_type";
                     }
                 }
@@ -650,7 +651,7 @@ function dt_list_exports_filters() {
 
                 let showClosed = showClosedCheckbox.prop("checked")
                 if ( !showClosed && ( currentView === 'custom_filter' || currentView === 'saved-filters' ) ){
-                    if ( wpApiListSettings.current_post_type === "contacts" ){
+                    if ( window.wpApiShare.post_type === "contacts" ){
                         if ( !data.overall_status ){
                             data.overall_status = [];
                         }
@@ -673,13 +674,13 @@ function dt_list_exports_filters() {
 
                 data.offset = 0
                 let increment = 0
-                while( window.contact_list.total > increment ) {
+                while( window.records_list.total > increment ) {
                     required++
 
                     getContactsPromise = $.ajax({
-                        url: wpApiListSettings.root + "dt-posts/v2/" + wpApiListSettings.current_post_type + "/",
+                        url: window.wpApiShare.root + "dt-posts/v2/" + window.wpApiShare.post_type + "/",
                         beforeSend: function (xhr) {
-                            xhr.setRequestHeader('X-WP-Nonce', wpApiListSettings.nonce);
+                            xhr.setRequestHeader('X-WP-Nonce', window.wpApiShare.nonce);
                         },
                         data: data,
                     })
@@ -718,5 +719,6 @@ function dt_list_exports_filters() {
             }
         })
     </script>
-    <?php
+        <?php
+    endif;
 }

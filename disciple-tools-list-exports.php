@@ -4,9 +4,9 @@
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-list-exports
  * Description: Disciple Tools - List Export adds export list panel to contacts list page. (BCC Email, Phone, CSV, Map)
  * of the Disciple Tools system.
- * Version:  1.0
+ * Version:  1.1
  * Author URI: https://github.com/DiscipleTools
- * GitHub Plugin URI: https://github.com/DiscipleTools/disciple-tools-list-exports
+ * GitHub Plugin URI: https://gihub.com/DiscipleTools/disciple-tools-list-exports
  * Requires at least: 4.7.0
  * (Requires 4.7+ because of the integration of the REST API at 4.7 and the security requirements of this milestone version.)
  * Tested up to: 5.4
@@ -21,7 +21,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
-$dt_list_exports_required_dt_theme_version = '0.28.0';
+$dt_list_exports_required_dt_theme_version = '1.0';
 
 /**
  * Gets the instance of the `DT_List_Exports` class.
@@ -57,18 +57,15 @@ function dt_list_exports() {
      * Don't load the plugin on every rest request. Only those with the 'sample' namespace
      */
     $is_rest = dt_is_rest();
-    //@todo change 'sample' if you want the plugin to be set up when using rest api calls other than ones with the 'sample' namespace
     if ( ! $is_rest ){
         return DT_List_Exports::get_instance();
     }
-    // @todo remove this "else if", if not using rest-api.php
-    else if ( strpos( dt_get_url_path(), 'dt_list_exports' ) !== false ) {
+    else if ( strpos( dt_get_url_path(), 'contacts' ) !== false ) {
         return DT_List_Exports::get_instance();
     }
-    // @todo remove if not using a post type
-    else if ( strpos( dt_get_url_path(), 'dt_list_export_post_type' ) !== false) {
-        return DT_List_Exports::get_instance();
-    }
+
+    return false;
+
 }
 add_action( 'after_setup_theme', 'dt_list_exports' );
 
@@ -158,7 +155,7 @@ class DT_List_Exports {
 
         // Admin and settings variables
         $this->token             = 'dt_list_exports';
-        $this->version             = '1.0';
+        $this->version             = '1.1';
 
     }
 
@@ -181,7 +178,7 @@ class DT_List_Exports {
             Puc_v4_Factory::buildUpdateChecker(
                 $hosted_json,
                 __FILE__,
-                'disciple-tools-dt-list-export'
+                'disciple-tools-list-export'
             );
 
         }
@@ -210,7 +207,7 @@ class DT_List_Exports {
         if ( strpos( $plugin_file_name, basename( __FILE__ ) ) ) {
             // You can still use `array_unshift()` to add links at the beginning.
 
-            $links_array[] = '<a href="https://disciple.tools">Disciple.Tools Community</a>'; // @todo replace with your links.
+            $links_array[] = '<a href="https://disciple.tools">Disciple.Tools Community</a>';
 
             // add other links here
         }

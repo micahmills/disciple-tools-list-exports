@@ -151,7 +151,7 @@ function dt_list_exports_filters( $post_type ) {
                             list_count['full']++
                         })
                         if (typeof v.contact_email[1] !== "undefined") {
-                            contacts_with.append(`<a href="/contacts/${v.ID}">${v.post_title}</a><br>`)
+                            contacts_with.append(`<a href="/contacts/${v.ID}">${_.escape(v.post_title)}</a><br>`)
                             list_count['with']++
                         }
                         if (count > 50) {
@@ -159,14 +159,14 @@ function dt_list_exports_filters( $post_type ) {
                             count = 0
                         }
                     } else {
-                        contacts_without.append(`<a href="/contacts/${v.ID}">${v.post_title}</a><br>`)
+                        contacts_without.append(`<a href="/contacts/${v.ID}">${_.escape(v.post_title)}</a><br>`)
                         list_count['without']++
                     }
                 })
 
                 let list_print = jQuery('#email-list-print')
                 $.each(email_totals, function (index, string) {
-                    list_print.append(string)
+                    list_print.append(_.escape(string))
                     index++
                 })
 
@@ -292,7 +292,7 @@ function dt_list_exports_filters( $post_type ) {
                                 list_count['full']++
                             })
                             if (typeof v.contact_phone[1] !== "undefined") {
-                                contacts_with.append(`<a href="/contacts/${v.ID}">${v.post_title}</a><br>`)
+                                contacts_with.append(`<a href="/contacts/${v.ID}">${_.escape(v.post_title)}</a><br>`)
                                 list_count['with']++
                             }
                             if (count > 50) {
@@ -300,14 +300,14 @@ function dt_list_exports_filters( $post_type ) {
                                 count = 0
                             }
                         } else {
-                            contacts_without.append(`<a href="/contacts/${v.ID}">${v.post_title}</a><br>`)
+                            contacts_without.append(`<a href="/contacts/${v.ID}">${_.escape(v.post_title)}</a><br>`)
                             list_count['without']++
                         }
                     })
 
                     let list_print = jQuery('#email-list-print')
                     $.each(phone_list, function (index, string) {
-                        list_print.append(string)
+                        list_print.append(_.escape(string))
                         index++
                     })
 
@@ -377,9 +377,9 @@ function dt_list_exports_filters( $post_type ) {
 
                     let csv_output = $('#csv-output')
                     $.each(window.csv_export, function(i,v){
-                        csv_output.append( $.map(v, function(e){
+                        csv_output.append( document.createTextNode($.map(v, function(e){
                             return e;
-                        }).join(','))
+                        }).join(',')))
                         csv_output.append(`<br>`)
                     })
 
